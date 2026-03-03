@@ -47,7 +47,7 @@ export default function InboxPage() {
     setAdding(true);
 
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    if (!user) { setAdding(false); return; }
 
     const { data, error } = await supabase
       .from('inbox_items')
@@ -60,7 +60,7 @@ export default function InboxPage() {
 
     setAdding(false);
     if (!error && data) {
-      setItems([data, ...items]);
+      setItems(prev => [data, ...prev]);
       setNewItemTitle('');
     } else { setError('Failed to add item'); }
   }
@@ -72,7 +72,7 @@ export default function InboxPage() {
       .eq('id', id);
 
     if (!error) {
-      setItems(items.filter(i => i.id !== id));
+      setItems(prev => prev.filter(i => i.id !== id));
     } else { setError('Failed to delete item'); }
   }
 
@@ -103,7 +103,7 @@ export default function InboxPage() {
         .update({ is_processed: true })
         .eq('id', item.id);
 
-      setItems(items.filter(i => i.id !== item.id));
+      setItems(prev => prev.filter(i => i.id !== item.id));
       router.push('/today');
     } else { setError('Failed to process item'); }
   }

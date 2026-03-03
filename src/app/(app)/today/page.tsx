@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 
 interface Task {
@@ -21,7 +20,6 @@ export default function TodayPage() {
   const [addingTask, setAddingTask] = useState(false);
   const [celebratingTaskId, setCelebratingTaskId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
   const supabase = createClient();
 
   useEffect(() => {
@@ -58,7 +56,7 @@ export default function TodayPage() {
     setAddingTask(true);
 
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    if (!user) { setAddingTask(false); return; }
 
     const nextSlot = tasks.length + 1;
     if (nextSlot > taskLimit) {
@@ -80,7 +78,7 @@ export default function TodayPage() {
     setAddingTask(false);
     if (error) { setError('Failed to add task'); return; }
     if (!error && data) {
-      setTasks([...tasks, data]);
+      setTasks(prev => [...prev, data]);
       setNewTaskTitle('');
       setShowAddModal(false);
     }
@@ -89,7 +87,7 @@ export default function TodayPage() {
   async function toggleComplete(task: Task) {
     const newCompleted = !task.is_completed;
     
-    setTasks(tasks.map(t => 
+    setTasks(prev => prev.map(t => 
       t.id === task.id 
         ? { ...t, is_completed: newCompleted, completed_at: newCompleted ? new Date().toISOString() : null }
         : t
@@ -103,7 +101,7 @@ export default function TodayPage() {
       })
       .eq('id', task.id);
 
-    if (error) { setTasks(tasks.map(t => t.id === task.id ? task : t)); setError('Failed to update task'); return; }
+    if (error) { setTasks(prev => prev.map(t => t.id === task.id ? task : t)); setError('Failed to update task'); return; }
 
     if (!error && newCompleted) {
       setCelebratingTaskId(task.id);
@@ -141,6 +139,7 @@ export default function TodayPage() {
     let longestStreak = 0;
     let tempStreak = 0;
     let prevDate: Date | null = null;
+    let firstGapSeen = false;
 
     for (const log of logs || []) {
       const logDate = new Date(log.completed_date);
@@ -151,6 +150,10 @@ export default function TodayPage() {
         if (dayDiff === 1) {
           tempStreak++;
         } else {
+          if (!firstGapSeen) {
+            currentStreak = tempStreak;
+            firstGapSeen = true;
+          }
           longestStreak = Math.max(longestStreak, tempStreak);
           tempStreak = 1;
         }
@@ -158,9 +161,15 @@ export default function TodayPage() {
       prevDate = logDate;
     }
     longestStreak = Math.max(longestStreak, tempStreak);
-    
-    if (logs?.[0]?.completed_date === today) {
+
+    // If no gap was ever seen, the entire history is one streak
+    if (!firstGapSeen) {
       currentStreak = tempStreak;
+    }
+
+    // Only count as current if the streak includes today
+    if (logs?.[0]?.completed_date !== today) {
+      currentStreak = 0;
     }
 
     const { data: currentStreakData } = await supabase
@@ -186,7 +195,7 @@ export default function TodayPage() {
       .eq('id', taskId);
 
     if (!error) {
-      setTasks(tasks.filter(t => t.id !== taskId));
+      setTasks(prev => prev.filter(t => t.id !== taskId));
     } else { setError('Failed to delete task'); }
   }
 

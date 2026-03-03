@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { Inbox } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 
 interface InboxItem {
@@ -21,6 +22,7 @@ export default function InboxPage() {
 
   useEffect(() => {
     loadInbox();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function loadInbox() {
@@ -143,7 +145,7 @@ export default function InboxPage() {
         </div>
       ) : items.length === 0 ? (
         <div className="text-center py-12">
-          <div className="text-4xl mb-3">📥</div>
+          <Inbox className="w-10 h-10 text-calm-muted mx-auto mb-3" />
           <p className="text-calm-muted">Inbox is empty</p>
           <p className="text-sm text-calm-muted mt-1">
             Capture thoughts quickly, process them later
@@ -158,7 +160,7 @@ export default function InboxPage() {
             >
               <div className="flex items-start gap-3">
                 <p className="flex-1 text-calm-text">{item.title}</p>
-                <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="flex gap-2 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                   <button
                     onClick={() => processItem(item)}
                     className="text-xs text-primary-600 hover:underline"

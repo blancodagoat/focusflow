@@ -25,6 +25,7 @@ export default function TodayPage() {
 
   useEffect(() => {
     loadTasks();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function loadTasks() {
@@ -267,7 +268,7 @@ export default function TodayPage() {
 
               <button
                 onClick={() => deleteTask(task.id)}
-                className="opacity-0 group-hover:opacity-100 text-calm-muted hover:text-accent-red text-sm transition-opacity"
+                className="sm:opacity-0 sm:group-hover:opacity-100 text-calm-muted hover:text-accent-red text-sm transition-opacity"
               >
                 Delete
               </button>

@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
+import { Flame } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 
 export default function AppNav({ streak }: { streak?: number }) {
@@ -48,7 +49,7 @@ export default function AppNav({ streak }: { streak?: number }) {
         <div className="flex items-center gap-4">
           {streak !== undefined && streak > 0 && (
             <div className="flex items-center gap-1 text-accent-yellow text-sm font-medium">
-              <span>🔥</span>
+              <Flame className="w-4 h-4 text-accent-orange" />
               <span>{streak}</span>
             </div>
           )}

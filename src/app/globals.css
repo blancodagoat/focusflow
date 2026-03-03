@@ -1,6 +1,48 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+  --color-primary-50: #f5f3ff;
+  --color-primary-100: #ede9fe;
+  --color-primary-200: #ddd6fe;
+  --color-primary-300: #c4b5fd;
+  --color-primary-400: #a78bfa;
+  --color-primary-500: #8b5cf6;
+  --color-primary-600: #7c3aed;
+  --color-primary-700: #6d28d9;
+  --color-primary-800: #5b21b6;
+  --color-primary-900: #4c1d95;
+  --color-primary: #7c3aed;
+
+  --color-calm-bg: #fafbfc;
+  --color-calm-card: #ffffff;
+  --color-calm-text: #1f2937;
+  --color-calm-muted: #6b7280;
+  --color-calm-border: #e5e7eb;
+
+  --color-accent-green: #10b981;
+  --color-accent-yellow: #f59e0b;
+  --color-accent-orange: #f97316;
+  --color-accent-red: #ef4444;
+
+  --radius-default: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-md: 0.5rem;
+  --radius-sm: 0.25rem;
+
+  --animate-celebrate: celebrate 0.6s ease-out;
+  --animate-pulse-soft: pulse-soft 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+
+  @keyframes celebrate {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.2); opacity: 0.8; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  @keyframes pulse-soft {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+  }
+}
 
 :root {
   --background: #fafbfc;
@@ -32,12 +74,18 @@ input, button, textarea {
 }
 
 .calm-button-primary {
-  @apply calm-button bg-primary-600 text-white;
+  @apply px-5 py-2.5 rounded-lg font-medium text-sm;
+  @apply transition-all duration-200;
+  @apply focus:outline-none focus:ring-2 focus:ring-offset-2;
+  @apply bg-primary-600 text-white;
   @apply hover:bg-primary-700 focus:ring-primary-300;
   @apply disabled:opacity-50 disabled:cursor-not-allowed;
 }
 
 .calm-button-secondary {
-  @apply calm-button bg-white border border-calm-border text-calm-text;
+  @apply px-5 py-2.5 rounded-lg font-medium text-sm;
+  @apply transition-all duration-200;
+  @apply focus:outline-none focus:ring-2 focus:ring-offset-2;
+  @apply bg-white border border-calm-border text-calm-text;
   @apply hover:bg-gray-50 focus:ring-gray-200;
 }

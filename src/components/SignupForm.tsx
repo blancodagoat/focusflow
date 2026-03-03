@@ -32,7 +32,7 @@ export default function SignupForm() {
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-primary-600 mb-2">Focus Flow</h1>
-          <p className="text-calm-muted">Start your simple task journey</p>
+          <p className="text-calm-muted">Create your account</p>
         </div>
         
         <form onSubmit={handleSubmit} className="space-y-4">

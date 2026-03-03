@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import AppNav from '@/components/AppNav';
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect('/login');
 

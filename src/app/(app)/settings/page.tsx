@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { Lightbulb } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 
 export default function SettingsPage() {
@@ -11,6 +12,7 @@ export default function SettingsPage() {
 
   useEffect(() => {
     loadSettings();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function loadSettings() {
@@ -54,7 +56,7 @@ export default function SettingsPage() {
         <div className="bg-white rounded-lg border border-calm-border p-6">
           <h2 className="font-semibold text-calm-text mb-2">Daily Task Limit</h2>
           <p className="text-sm text-calm-muted mb-4">
-            How many tasks you want to focus on each day. Research shows 3-5 tasks works best for ADHD brains.
+            Tasks per day (3-5 recommended)
           </p>
           <div className="flex items-center gap-4">
             <input
@@ -86,7 +88,7 @@ export default function SettingsPage() {
 
         {/* Tips */}
         <div className="bg-primary-50 rounded-lg border border-primary-200 p-6">
-          <h3 className="font-medium text-primary-800 mb-2">💡 Tips for ADHD</h3>
+          <h3 className="font-medium text-primary-800 mb-2"><Lightbulb className="w-4 h-4 inline" /> Tips for ADHD</h3>
           <ul className="text-sm text-primary-700 space-y-2">
             <li>• Keep your daily limit low — less is more</li>
             <li>• Use the inbox to capture ideas without distraction</li>

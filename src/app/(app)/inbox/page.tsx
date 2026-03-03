@@ -17,6 +17,7 @@ export default function InboxPage() {
   const [loading, setLoading] = useState(true);
   const [newItemTitle, setNewItemTitle] = useState('');
   const [adding, setAdding] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const supabase = createClient();
 
@@ -29,13 +30,14 @@ export default function InboxPage() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    const { data } = await supabase
+    const { data, error: loadError } = await supabase
       .from('inbox_items')
       .select('*')
       .eq('user_id', user.id)
       .eq('is_processed', false)
       .order('created_at', { ascending: false });
 
+    if (loadError) setError('Failed to load inbox');
     setItems(data || []);
     setLoading(false);
   }
@@ -60,7 +62,7 @@ export default function InboxPage() {
     if (!error && data) {
       setItems([data, ...items]);
       setNewItemTitle('');
-    }
+    } else { setError('Failed to add item'); }
   }
 
   async function deleteItem(id: string) {
@@ -71,7 +73,7 @@ export default function InboxPage() {
 
     if (!error) {
       setItems(items.filter(i => i.id !== id));
-    }
+    } else { setError('Failed to delete item'); }
   }
 
   async function processItem(item: InboxItem) {
@@ -103,11 +105,17 @@ export default function InboxPage() {
 
       setItems(items.filter(i => i.id !== item.id));
       router.push('/today');
-    }
+    } else { setError('Failed to process item'); }
   }
 
   return (
     <div>
+      {error && (
+        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700 flex items-center justify-between">
+          <span>{error}</span>
+          <button onClick={() => setError(null)} className="text-red-500 hover:text-red-700 font-medium focus:outline-none focus:ring-2 focus:ring-red-300 rounded">Dismiss</button>
+        </div>
+      )}
       <header className="mb-6">
         <h1 className="text-2xl font-bold text-calm-text">Inbox</h1>
         <p className="text-calm-muted text-sm mt-1">

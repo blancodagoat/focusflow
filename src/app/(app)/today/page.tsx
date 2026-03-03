@@ -20,6 +20,7 @@ export default function TodayPage() {
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [addingTask, setAddingTask] = useState(false);
   const [celebratingTaskId, setCelebratingTaskId] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const supabase = createClient();
 
@@ -40,13 +41,14 @@ export default function TodayPage() {
 
     if (profile) setTaskLimit(profile.daily_task_limit);
 
-    const { data: tasksData } = await supabase
+    const { data: tasksData, error: loadError } = await supabase
       .from('tasks')
       .select('*')
       .eq('user_id', user.id)
       .eq('task_date', new Date().toISOString().split('T')[0])
       .order('slot_order');
 
+    if (loadError) setError('Failed to load tasks');
     setTasks(tasksData || []);
     setLoading(false);
   }
@@ -76,6 +78,7 @@ export default function TodayPage() {
       .single();
 
     setAddingTask(false);
+    if (error) { setError('Failed to add task'); return; }
     if (!error && data) {
       setTasks([...tasks, data]);
       setNewTaskTitle('');
@@ -99,6 +102,8 @@ export default function TodayPage() {
         completed_at: newCompleted ? new Date().toISOString() : null
       })
       .eq('id', task.id);
+
+    if (error) { setTasks(tasks.map(t => t.id === task.id ? task : t)); setError('Failed to update task'); return; }
 
     if (!error && newCompleted) {
       setCelebratingTaskId(task.id);
@@ -182,7 +187,7 @@ export default function TodayPage() {
 
     if (!error) {
       setTasks(tasks.filter(t => t.id !== taskId));
-    }
+    } else { setError('Failed to delete task'); }
   }
 
   const completedCount = tasks.filter(t => t.is_completed).length;
@@ -203,6 +208,12 @@ export default function TodayPage() {
 
   return (
     <div>
+      {error && (
+        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700 flex items-center justify-between">
+          <span>{error}</span>
+          <button onClick={() => setError(null)} className="text-red-500 hover:text-red-700 font-medium focus:outline-none focus:ring-2 focus:ring-red-300 rounded">Dismiss</button>
+        </div>
+      )}
       <header className="mb-6">
         <h1 className="text-2xl font-bold text-calm-text">Today</h1>
         <p className="text-calm-muted text-sm mt-1">
@@ -301,6 +312,8 @@ export default function TodayPage() {
           role="dialog"
           aria-modal="true"
           aria-labelledby="modal-title"
+          onClick={(e) => { if (e.target === e.currentTarget) { setShowAddModal(false); setNewTaskTitle(''); } }}
+          onKeyDown={(e) => { if (e.key === 'Escape') { setShowAddModal(false); setNewTaskTitle(''); } }}
         >
           <div className="bg-white rounded-t-2xl sm:rounded-xl w-full sm:max-w-md p-4 sm:p-6">
             <h3 id="modal-title" className="text-lg font-semibold mb-4">Add Task</h3>

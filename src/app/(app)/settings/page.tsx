@@ -8,6 +8,8 @@ export default function SettingsPage() {
   const [taskLimit, setTaskLimit] = useState(5);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [loadingSettings, setLoadingSettings] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const supabase = createClient();
 
   useEffect(() => {
@@ -16,18 +18,21 @@ export default function SettingsPage() {
   }, []);
 
   async function loadSettings() {
+    setLoadingSettings(true);
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    if (!user) { setLoadingSettings(false); return; }
 
-    const { data } = await supabase
+    const { data, error: loadError } = await supabase
       .from('profiles')
       .select('daily_task_limit')
       .eq('id', user.id)
       .single();
 
+    if (loadError) setError('Failed to load settings');
     if (data) {
       setTaskLimit(data.daily_task_limit);
     }
+    setLoadingSettings(false);
   }
 
   async function saveSettings() {
@@ -35,18 +40,27 @@ export default function SettingsPage() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    await supabase
+    const { error: saveError } = await supabase
       .from('profiles')
       .update({ daily_task_limit: taskLimit })
       .eq('id', user.id);
 
     setSaving(false);
+    if (saveError) { setError('Failed to save settings'); return; }
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   }
 
+  if (loadingSettings) return <div className="space-y-4 animate-pulse"><div className="h-8 w-32 bg-gray-200 rounded" /><div className="h-40 bg-gray-200 rounded-lg" /></div>;
+
   return (
     <div>
+      {error && (
+        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700 flex items-center justify-between">
+          <span>{error}</span>
+          <button onClick={() => setError(null)} className="text-red-500 hover:text-red-700 font-medium focus:outline-none focus:ring-2 focus:ring-red-300 rounded">Dismiss</button>
+        </div>
+      )}
       <header className="mb-6">
         <h1 className="text-2xl font-bold text-calm-text">Settings</h1>
       </header>

@@ -34,7 +34,7 @@ export default function AppNav({ streak }: { streak?: number }) {
               <Link
                 key={href}
                 href={href}
-                className={`text-sm font-medium transition-colors ${
+                className={`text-sm font-medium transition-colors rounded focus:outline-none focus:ring-2 focus:ring-primary-300 ${
                   pathname === href 
                     ? 'text-primary-600' 
                     : 'text-calm-muted hover:text-calm-text'
@@ -55,7 +55,7 @@ export default function AppNav({ streak }: { streak?: number }) {
           )}
           <button
             onClick={handleSignOut}
-            className="text-sm text-calm-muted hover:text-calm-text"
+            className="text-sm text-calm-muted hover:text-calm-text rounded focus:outline-none focus:ring-2 focus:ring-primary-300"
           >
             Sign out
           </button>

@@ -44,3 +44,5 @@ npm run dev
 
 - Free with limits
 - Premium: $4.99/month (unlimited tasks, sync)
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/Q5Q668VS3)
